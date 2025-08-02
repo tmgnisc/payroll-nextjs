@@ -324,8 +324,8 @@ export function PayrollProcessingComponent() {
                 <TableRow key={record._id}>
                   <TableCell>
                     <div>
-                      <div className="font-medium">{record.employeeId.name}</div>
-                      <div className="text-sm text-muted-foreground">{record.employeeId.employeeId}</div>
+                      <div className="font-medium">{record.employeeId?.name || 'Unknown'}</div>
+                      <div className="text-sm text-muted-foreground">{record.employeeId?.employeeId || 'N/A'}</div>
                     </div>
                   </TableCell>
                   <TableCell>{record.payPeriod}</TableCell>

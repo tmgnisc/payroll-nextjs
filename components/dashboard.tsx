@@ -134,7 +134,7 @@ export function DashboardComponent({ user, isAdmin }: DashboardProps) {
   // Prepare chart data
   const payrollDistributionData = latestMonthRecords.map((record) => {
     return {
-      name: record.employeeId.name.split(" ")[0] || "Unknown",
+      name: record.employeeId?.name?.split(" ")[0] || record.employeeId?.employeeId || "Unknown",
       grossPay: record.grossPay,
       netPay: record.netPay,
       deductions: record.grossPay - record.netPay,

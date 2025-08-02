@@ -94,7 +94,7 @@ export function PayslipComponent({ user }: PayslipProps) {
   // Get the latest payroll record for the selected employee
   const latestPayrollRecord = selectedEmployeeId
     ? payrollRecords
-        .filter((record) => record.employeeId._id === selectedEmployeeId)
+        .filter((record) => record.employeeId?._id === selectedEmployeeId)
         .sort((a, b) => {
           // Sort by pay period
           if (a.payPeriod > b.payPeriod) return -1

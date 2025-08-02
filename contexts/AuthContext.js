@@ -8,20 +8,25 @@ export function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
   const [token, setToken] = useState(null);
+  const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
-    // Check for existing token in localStorage
-    const storedToken = localStorage.getItem('token');
-    const storedUser = localStorage.getItem('user');
+    setMounted(true);
     
-    console.log('AuthContext: Checking localStorage');
-    console.log('Stored token:', storedToken ? 'exists' : 'not found');
-    console.log('Stored user:', storedUser ? 'exists' : 'not found');
-    
-    if (storedToken && storedUser) {
-      setToken(storedToken);
-      setUser(JSON.parse(storedUser));
-      console.log('AuthContext: Restored from localStorage');
+    // Check for existing token in localStorage only on client side
+    if (typeof window !== 'undefined') {
+      const storedToken = localStorage.getItem('token');
+      const storedUser = localStorage.getItem('user');
+      
+      console.log('AuthContext: Checking localStorage');
+      console.log('Stored token:', storedToken ? 'exists' : 'not found');
+      console.log('Stored user:', storedUser ? 'exists' : 'not found');
+      
+      if (storedToken && storedUser) {
+        setToken(storedToken);
+        setUser(JSON.parse(storedUser));
+        console.log('AuthContext: Restored from localStorage');
+      }
     }
     
     setLoading(false);
@@ -51,8 +56,10 @@ export function AuthProvider({ children }) {
       setToken(data.token);
       
       // Store in localStorage
-      localStorage.setItem('token', data.token);
-      localStorage.setItem('user', JSON.stringify(data.user));
+      if (typeof window !== 'undefined') {
+        localStorage.setItem('token', data.token);
+        localStorage.setItem('user', JSON.stringify(data.user));
+      }
       
       console.log('AuthContext: Login successful, token stored');
       console.log('AuthContext: Token length:', data.token?.length);
@@ -68,8 +75,10 @@ export function AuthProvider({ children }) {
     console.log('AuthContext: Logging out');
     setUser(null);
     setToken(null);
-    localStorage.removeItem('token');
-    localStorage.removeItem('user');
+    if (typeof window !== 'undefined') {
+      localStorage.removeItem('token');
+      localStorage.removeItem('user');
+    }
   };
 
   const isAuthenticated = () => {
@@ -98,6 +107,16 @@ export function AuthProvider({ children }) {
     isAdmin,
     isEmployee,
   };
+
+  // Prevent hydration mismatch by not rendering until mounted
+  if (!mounted) {
+    return <div className="min-h-screen bg-background flex items-center justify-center">
+      <div className="text-center">
+        <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-primary mx-auto"></div>
+        <p className="mt-4 text-lg">Loading...</p>
+      </div>
+    </div>;
+  }
 
   return (
     <AuthContext.Provider value={value}>
